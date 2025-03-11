@@ -1,6 +1,31 @@
 import time
 import whisper
 import argparse
+"""
+OpenAI Whisper ASR Test Script
+
+This script tests the performance of the OpenAI Whisper model by measuring:
+1. Model loading time
+2. Audio transcription time
+
+Usage:
+    python whisper_test.py --model <model_size> --audio <audio_file>
+
+Arguments:
+    --model: Select the Whisper model size (tiny, base, small, medium, large). Default is 'small'.
+    --audio: Path to the audio file to transcribe.
+
+Example:
+    python whisper_test.py --model small --audio sample.wav
+
+Requirements:
+    - Install Whisper: pip install git+https://github.com/openai/whisper.git
+    - Install FFmpeg: sudo apt install ffmpeg (Linux) / brew install ffmpeg (MacOS)
+
+Output:
+    - Displays the time taken for model loading and transcription.
+    - Prints the transcribed text.
+"""
 
 def transcribe_audio(model_size, audio_path):
     print(f"Loading Whisper model: {model_size}...")
