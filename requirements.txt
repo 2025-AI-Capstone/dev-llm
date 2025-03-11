@@ -1,1 +1,2 @@
-whisper==1.1.10
+openai-whisper
+ffmpeg
