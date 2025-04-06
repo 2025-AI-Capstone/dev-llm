@@ -7,28 +7,28 @@ def task_selector(state: AgentState) -> str:
     """
     user_input = state.input.strip().lower()
     
-
     # (특정 키워드(날씨, 뉴스, DB 등)를 기준으로 라우팅
     #  실제로는 여기에 NLP 파싱, 정규식, 의도 분류 모델 등을 적용 가능
-    if user_input in ["weather", "날씨"]:
+    if user_input in ["weather", "날씨", "기상", "온도", "기온", "예보"]:
         return "call_weather"
-    elif user_input in ["news", "뉴스", "기사"]:
+    elif user_input in ["news", "뉴스", "기사", "소식", "정보"]:
         return "call_news"
-    elif user_input in ["db", "database", "데이터베이스"]:
+    elif user_input in ['저장', "기억해", "일정 추가", "알람 설정", "알림 설정", "알림", "일정", "기억"]:
         return "call_db"
-    elif user_input in ["alert"]:
-        return "call_alert"
+    
+    return "normal"
 
-
-def get_weather():
+def get_weather(state: AgentState) -> str:
     return
 
-def get_news():
+def get_news(state: AgentState) -> str:
     return
 
-def get_db():
+def get_db(state: AgentState) -> bool:
     return
 
+def check_routine(state: AgentState) -> bool:
+    return
 
 def generator(state: AgentState) -> str:
     """수집된 정보를 바탕으로 답변 생성"""
