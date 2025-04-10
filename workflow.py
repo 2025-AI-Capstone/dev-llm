@@ -12,7 +12,7 @@ def run_workflow(input_query: str, llm: Any, fall_alert: bool = False) -> str:
     workflow.add_node("task_selector", task_selector)
     workflow.add_node("get_weather", get_weather)
     workflow.add_node("get_news", get_news)
-    workflow.add_node("get_news", get_db)
+    workflow.add_node("get_db", get_db)
     workflow.add_node("check_routine", check_routine)
     workflow.add_node("generator", generator)
     

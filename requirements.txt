@@ -2,3 +2,5 @@ openai-whisper
 ffmpeg
 gTTS
 langgraph
+python-dotenv
+request
