@@ -75,8 +75,30 @@ def get_news(state: AgentState) -> AgentState:
 
 
 def get_db(state: AgentState) -> bool:
-    # 
-    return
+    """
+    check_routine에서 전달한 루틴 정보를 받아 백엔드에 POST 요청을 보낸다.
+    성공 시 True, 실패 시 False 반환
+    """
+    backend_url = "http://localhost:8080/routines"
+    
+    # check_routine에서 전달한 루틴 정보 가져오기
+    routine_payload = getattr(state, "routine_data", None)
+    
+    if not routine_payload:
+        print("No routine data found in state.")
+        state.db_info = False
+        return False
+
+    try:
+        response = requests.post(backend_url, json=routine_payload, timeout=3)
+        response.raise_for_status()
+        print(f"Routine 등록 성공: {response.status_code}")
+        state.db_info = True
+        return True
+    except requests.exceptions.RequestException as e:
+        print(f"Routine 등록 실패: {e}")
+        state.db_info = False
+        return False
 
 
 def generator(state: AgentState) -> str:

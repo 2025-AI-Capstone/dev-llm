@@ -11,5 +11,5 @@ class AgentState:
         self.db_info = bool
         self.fall_alert = fall_alert
         self.check_routine = bool
-
+        self.routine_data = str,
         self.final_answer = ""
