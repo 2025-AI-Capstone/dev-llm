@@ -12,7 +12,7 @@ class AgentState:
         self.news_info = ""
         self.db_info = bool
         self.fall_alert = fall_alert
-        self.check_routine = bool
+        self.check_routine = str
         self.routine_data = str
         self.final_answer = ""
-        agent_components: Dict[str, Any]
+        self.agent_components: Dict[str, Any]

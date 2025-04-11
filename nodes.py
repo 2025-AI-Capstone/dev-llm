@@ -100,14 +100,25 @@ def get_db(state: AgentState) -> bool:
         state.db_info = False
         return False
 
-
-def generator(state: AgentState) -> str:
-    # Fall Alert가 있는 경우 우선 처리
+def generator(state: AgentState) -> AgentState:
+    # 낙상 감지 시 우선 경고 메시지 생성
     if state.fall_alert:
-        # TODO: Fall Alert 처리 로직 구현
-        pass
-    
-    # API 결과를 가져와 답변 생성
-    # TODO: 실제 답변 생성 로직 구현
-    state.final_answer = "Generated answer based on collected information"
+        state.final_answer = "낙상이 감지되었습니다. 즉시 확인이 필요합니다. 괜찮으신가요?"
+        return state
+    # if state.routine_call:
+
+    # 일반 정보 기반 응답 생성
+    generator_chain = state.agent_components["generator_chain"]
+
+    # LLM 호출
+    response = generator_chain.invoke({
+        "weather_info": state.weather_info,
+        "news_info": state.news_info,
+        "check_routine": str(state.check_routine),
+        "db_info": str(state.db_info),
+        "fall_alert": str(state.fall_alert),
+    })
+
+    # 결과 저장
+    state.final_answer = response.content.strip()
     return state

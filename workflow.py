@@ -1,13 +1,13 @@
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
 from AgentState import AgentState
-from nodes import task_selector, generator, get_weather, get_news, get_db, check_routine
+from nodes import generator, get_weather, get_news, get_db
+from edges import task_selector, check_routine
 
-def run_workflow(input_query: str, llm: Any, fall_alert: bool = False) -> str:
+def run_workflow(input_query, llm, fall_alert = False, agent_components) -> str:
     """워크플로우 실행을 위한 메인 함수"""
     # StateGraph 초기화
     workflow = StateGraph(AgentState)
-    
     # 노드 추가
     workflow.add_node("task_selector", task_selector)
     workflow.add_node("get_weather", get_weather)
@@ -54,7 +54,8 @@ def run_workflow(input_query: str, llm: Any, fall_alert: bool = False) -> str:
     initial_state = AgentState(
         input_query=input_query,
         llm=llm,
-        fall_alert=fall_alert
+        fall_alert=fall_alert,
+        agent_componenets = agent_components
     )
     
     # 워크플로우 실행

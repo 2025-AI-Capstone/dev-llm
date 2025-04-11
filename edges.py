@@ -16,4 +16,10 @@ def task_selector(state: AgentState) -> str:
     return "normal"
 
 def check_routine(state: AgentState) -> str:
-    return
+
+    check_routine_chain = state.agent_components["check_routine_chain"]
+    if not check_routine_chain:
+        raise ValueError("agent_components not found in state")
+    response = check_routine_chain.invoke({"user_input": state.input})
+    state.check_routine = response.content
+    return response.content
