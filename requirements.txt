@@ -5,3 +5,4 @@ langgraph
 python-dotenv
 requests
 langchain
+fastapi

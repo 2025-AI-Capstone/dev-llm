@@ -5,6 +5,7 @@ class AgentState:
     def __init__(self, 
                  input_query: str,
                  llm: Any,
+                 routine_alarm,
                  fall_alert: bool = False):
         self.input = input_query
         self.llm = llm
@@ -15,4 +16,5 @@ class AgentState:
         self.check_routine = str
         self.routine_data = str
         self.final_answer = ""
+        self.routine_alarm = routine_alarm or {}
         self.agent_components: Dict[str, Any]
