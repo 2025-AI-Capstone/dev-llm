@@ -34,6 +34,14 @@ def run_workflow(input_query: str, llm: Any, fall_alert: bool = False) -> str:
     workflow.add_edge("get_weather", "generator")
     workflow.add_edge("get_news", "generator")
     workflow.add_edge("check_routine", "generator")
+    workflow.add_conditional_edges(
+        "check_routine",
+        lambda x: x,
+        {
+            "call_db", "get_db",
+            "reject", "generator"
+        }
+    )
     workflow.add_edge("get_db", "generator")
 
     # generator에서 종료

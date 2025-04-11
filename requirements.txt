@@ -3,4 +3,4 @@ ffmpeg
 gTTS
 langgraph
 python-dotenv
-request
+requests

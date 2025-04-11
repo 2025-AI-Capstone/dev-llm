@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # .env에서 API 키 불러오기
-api_key = os.getenv("OPENWEATHER_API_KEY")
+api_key = os.getenv("WEATHER_API_KEY")
 
 if not api_key:
-    print("❌ OPENWEATHER_API_KEY가 .env에 설정되어 있지 않습니다.")
+    print("WEATHER_API_KEY가 .env에 설정되어 있지 않습니다.")
     exit()
 
 # 서울 날씨 조회 URL 구성
@@ -39,10 +39,10 @@ try:
         "weather": weather
     }
 
-    print("✅ 결과:")
+    print("결과:")
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 except requests.RequestException as e:
-    print(f"❌ 날씨 API 요청 중 오류 발생: {e}")
+    print(f"날씨 API 요청 중 오류 발생: {e}")
 except KeyError as e:
-    print(f"❌ 응답 파싱 오류: {e}")
+    print(f"응답 파싱 오류: {e}")
