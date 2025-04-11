@@ -15,5 +15,5 @@ def task_selector(state: AgentState) -> str:
     
     return "normal"
 
-def check_routine(state: AgentState) -> bool:
+def check_routine(state: AgentState) -> str:
     return

@@ -107,7 +107,7 @@ def generator(state: AgentState) -> str:
         # TODO: Fall Alert 처리 로직 구현
         pass
     
-    # API 결과들을 종합하여 답변 생성
+    # API 결과를 가져와 답변 생성
     # TODO: 실제 답변 생성 로직 구현
     state.final_answer = "Generated answer based on collected information"
     return state

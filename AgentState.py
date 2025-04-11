@@ -1,3 +1,5 @@
+from typing import TypedDict, Sequence, List, Dict, Optional, Any
+
 class AgentState:
     """워크플로우의 상태를 관리하는 클래스"""
     def __init__(self, 
@@ -11,5 +13,6 @@ class AgentState:
         self.db_info = bool
         self.fall_alert = fall_alert
         self.check_routine = bool
-        self.routine_data = str,
+        self.routine_data = str
         self.final_answer = ""
+        agent_components: Dict[str, Any]

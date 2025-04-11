@@ -4,3 +4,4 @@ gTTS
 langgraph
 python-dotenv
 requests
+langchain
