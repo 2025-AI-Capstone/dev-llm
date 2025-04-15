@@ -41,12 +41,28 @@ def initialize_agent_components(llm):
     낙상 감지가 True일 경우, 가장 먼저 경고 메시지를 포함하세요.
     """)
     ])
+    check_emergency_prompt = PromptTemplate.from_template("""
+        당신은 긴급 상황에서 사용자의 요청을 판단하는 AI입니다.
+
+        다음 음성 입력 내용을 보고, 신고가 필요한 상황인지 판단하세요.
+        입력이 잡음 또는 비어있어도 신고 상황으로 판단합니다.
+
+        음성 입력:
+        "{fall_response}"
+
+        다음 중 하나로만 답하세요:
+        - "report": 신고 요청으로 해석됨
+        - "ok": 괜찮다는 의사 표시로 해석됨
+        - "no response": 입력이 없거나 노이즈만 있을 때
+        """)
     check_routine_chain = check_routine_prompt | llm.bind(temperature=0.4)
     generator_chain = generator_prompt | llm.bind(temperature=0.3)
+    check_emergency_chain = check_emergency_prompt | llm.bind(temperature=0.2)
     
     return {
         "check_routine_chain":check_routine_chain,
-        "generator_chain":generator_chain
+        "generator_chain":generator_chain,
+        "check_emergency_chain":check_emergency_chain
     }
 
 
