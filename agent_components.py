@@ -1,5 +1,7 @@
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
 import datetime
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from langchain.llms import HuggingFacePipeline
 
 def initialize_agent_components(llm):
 
@@ -46,3 +48,27 @@ def initialize_agent_components(llm):
         "check_routine_chain":check_routine_chain,
         "generator_chain":generator_chain
     }
+
+
+
+def load_kcgpt2_llm():
+    model_id = "beomi/kcgpt2"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id)
+
+    pipe = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        max_new_tokens=60,
+        do_sample=True,
+        top_k=50,
+        top_p=0.95,
+        temperature=0.7
+    )
+
+    llm = HuggingFacePipeline(pipeline=pipe)
+    return llm
+
+llm = load_kcgpt2_llm()
