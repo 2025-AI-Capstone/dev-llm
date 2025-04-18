@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 
 from langchain.chat_models import ChatOpenAI
-from agent_components import initialize_agent_components
+from agent_components import initialize_agent_components, load_kcgpt2_llm
 from workflow import run_workflow
 
 load_dotenv()
@@ -13,7 +13,7 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8080")
 
 app = FastAPI()
 
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.5)
+llm = load_kcgpt2_llm()
 agent_components = initialize_agent_components(llm)
 
 @app.post("/routine/alarm")

@@ -2,7 +2,7 @@ from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
 from AgentState import AgentState
 from nodes import generator, get_weather, get_news, get_db
-from edges import task_selector, check_routine
+from edges import task_selector, check_routine, await_voice_response
 
 def run_workflow(input_query, llm, fall_alert = False, agent_components) -> str:
     """워크플로우 실행을 위한 메인 함수"""
