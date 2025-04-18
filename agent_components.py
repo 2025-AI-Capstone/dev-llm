@@ -5,8 +5,7 @@ from langchain.llms import HuggingFacePipeline
 
 def initialize_agent_components(llm):
 
-    now = datetime.now()
-    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+
     check_routine_prompt = PromptTemplate.from_template("""
     사용자의 입력이 루틴 등록 요청인지 확인하고, 요청이라면 다음 정보를 JSON 형식으로 추출하세요.
 
@@ -87,4 +86,3 @@ def load_kcgpt2_llm():
     llm = HuggingFacePipeline(pipeline=pipe)
     return llm
 
-llm = load_kcgpt2_llm()

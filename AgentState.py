@@ -1,20 +1,15 @@
-from typing import TypedDict, Sequence, List, Dict, Optional, Any
+from typing import TypedDict, Any, Dict, Optional
 
-class AgentState:
-    """워크플로우의 상태를 관리하는 클래스"""
-    def __init__(self, 
-                 input_query: str,
-                 llm: Any,
-                 routine_alarm,
-                 fall_alert: bool = False):
-        self.input = input_query
-        self.llm = llm
-        self.weather_info = ""
-        self.news_info = ""
-        self.db_info = bool
-        self.fall_alert = fall_alert
-        self.check_routine = str
-        self.routine_data = str
-        self.final_answer = ""
-        self.routine_alarm = routine_alarm or {}
-        self.agent_components: Dict[str, Any]
+class AgentState(TypedDict):
+    input: str
+    llm: Any
+    weather_info: str
+    news_info: str
+    db_info: bool
+    fall_alert: bool
+    check_routine: str
+    routine_data: str
+    final_answer: str
+    routine_alarm: Dict[str, Any]
+    agent_components: Dict[str, Any]
+    voice_response: Optional[str]

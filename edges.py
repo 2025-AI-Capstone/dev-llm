@@ -1,48 +1,42 @@
 from AgentState import AgentState
+from typing import Dict
 
-def task_selector(state: AgentState) -> str:
+def task_selector(state: AgentState) -> Dict:
+    user_input = state["input"].strip().lower()
 
-    user_input = state.input.strip().lower()
-    
-    # (특정 키워드(날씨, 뉴스, DB 등)를 기준으로 라우팅
-    #  실제로는 여기에 NLP 파싱, 정규식, 의도 분류 모델 등을 적용 가능
     if user_input in ["weather", "날씨", "기상", "온도", "기온", "예보"]:
-        return "call_weather"
+        state["task_type"] = "call_weather"
     elif user_input in ["news", "뉴스", "기사", "소식", "정보"]:
-        return "call_news"
-    elif user_input in ['저장', "기억해", "일정 추가", "알람 설정", "알림 설정", "알림", "일정", "기억"]:
-        return "call_db"
-    
-    return "normal"
+        state["task_type"] = "call_news"
+    elif user_input in ['저장', "기억해", "일정 추가", "알람 설정", "알람", "일정", "기억"]:
+        state["task_type"] = "call_db"
+    else:
+        state["task_type"] = "normal"
 
-def check_routine(state: AgentState) -> str:
+    return state
 
-    check_routine_chain = state.agent_components["check_routine_chain"]
+def check_routine_edge(state: AgentState) -> Dict:
+    check_routine_chain = state["agent_components"].get("check_routine_chain")
     if not check_routine_chain:
-        raise ValueError("agent_components not found in state")
-    response = check_routine_chain.invoke({"user_input": state.input})
-    state.check_routine = response.content
-    return response.content
+        raise ValueError("check_routine_chain not found in agent_components")
 
-def await_voice_response(state: AgentState) -> str:
-    """
-    낙상 이후 사용자 음성 입력(STT 결과)을 분석하여 신고 여부 판단
-    """
-    fall_response = state.fall_response.strip()
-    check_chain = state.agent_components["check_emergency_chain"]
+    response = check_routine_chain.invoke({"user_input": state["input"]})
+    state["check_routine"] = response.content
+    return state
 
-    # 유효한 음성 입력이 없을 경우
+def await_voice_response(state: AgentState) -> Dict:
+    fall_response = state.get("fall_response", "").strip()
+    check_chain = state["agent_components"].get("check_emergency_chain")
+
     if not fall_response:
-        state.voice_response = "no_response"
-        return "no_response"
+        state["voice_response"] = "no_response"
+        return state
 
-    # LLM을 통해 신고 여부 판단
     response = check_chain.invoke({"fall_response": fall_response}).content.strip().lower()
 
     if response in ["report", "ok", "no_response"]:
-        state.voice_response = response
-        return response
+        state["voice_response"] = response
     else:
-        # 예상치 못한 응답은 무시하고 no_response 처리
-        state.voice_response = "no_response"
-        return "no_response"
+        state["voice_response"] = "no_response"
+
+    return state
