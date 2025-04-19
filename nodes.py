@@ -113,8 +113,8 @@ def send_emergency_report(state: AgentState) -> Dict[str, Any]:
 
     try:
         requests.post(f"{backend_url}/emergency/report", json=report_data, timeout=3)
-        state["final_answer"] = "🚨 응급 신고가 전송되었습니다."
+        state["final_answer"] = "응급 신고가 전송되었습니다."
     except Exception as e:
-        state["final_answer"] = f"❗ 신고 요청 중 오류 발생: {e}"
+        state["final_answer"] = f"신고 요청 중 오류 발생: {e}"
 
     return state
