@@ -74,7 +74,7 @@ def run_workflow(input: str, llm: Any, fall_alert: bool = False, agent_component
     app = workflow.compile()
 
     initial_state = {
-        "input": "",
+        "input" : input,
         "llm": llm,
         "fall_alert": fall_alert,
         "agent_components": agent_components or {},

@@ -1,8 +1,7 @@
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
 import datetime
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-from langchain.llms import HuggingFacePipeline
-
+from langchain_community.llms import HuggingFacePipeline
 def initialize_agent_components(llm):
 
 
@@ -66,8 +65,7 @@ def initialize_agent_components(llm):
 
 
 
-def load_kcgpt2_llm():
-    model_id = "beomi/kcgpt2"
+def load_llm(model_id):
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id)

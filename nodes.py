@@ -97,7 +97,7 @@ def generator(state: AgentState) -> Dict[str, Any]:
         "db_info": str(state.get("db_info", False)),
         "fall_alert": str(state.get("fall_alert", False)),
     })
-    state["final_answer"] = response.content.strip()
+    state["final_answer"] = response
     return state
 
 
