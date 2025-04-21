@@ -1,7 +1,7 @@
 from workflow import run_workflow
 from agent_components import initialize_agent_components, load_llm
 
-model_id = "yanolja/EEVE-Korean-Instruct-2.8B-v1.0"
+model_id = "Qwen/Qwen2.5-3B-Instruct"
 llm = load_llm(model_id)
 agent_components = initialize_agent_components(llm)
 
