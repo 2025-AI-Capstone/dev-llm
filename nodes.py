@@ -6,7 +6,17 @@ import json
 import os
 import urllib
 
+def apply_chatml_format(messages):
+        chat_input = ""
+        for message in messages:
+            role = message["role"]
+            content = message["content"]
+            chat_input += f"<|im_start|>{role}\n{content}\n<|im_end|>\n"
+        return chat_input
+
 def get_weather(state: AgentState) -> Dict[str, Any]:
+    
+    load_dotenv()
     api_key = os.getenv("WEATHER_API_KEY")
     if not api_key:
         state["weather_info"] = ""
@@ -22,7 +32,7 @@ def get_weather(state: AgentState) -> Dict[str, Any]:
         response = requests.get(url, timeout=5)
         response.raise_for_status()
         data = response.json()
-
+        print(data)
         city = data.get("name", "Unknown")
         main_data = data.get("main", {})
         weather_arr = data.get("weather", [])
@@ -47,8 +57,8 @@ def get_news(state: AgentState) -> Dict[str, Any]:
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
 
-    agent_response = state.get("agent_response", "")
-    encText = urllib.parse.quote(agent_response)
+    input = state.get("input", "")
+    encText = urllib.parse.quote(input)
 
     url = 'https://openapi.naver.com/v1/search/news?query=' + encText
     request = urllib.request.Request(url)
@@ -88,17 +98,53 @@ def generator(state: AgentState) -> Dict[str, Any]:
         state["final_answer"] = "낙상이 감지되었습니다. 즉시 확인이 필요합니다. 괜찮으신가요?"
         return state
 
-    generator_chain = state["agent_components"]["generator_chain"]
-    response = generator_chain.invoke({
-        "user_input": state.get("input", ""),
-        "weather_info": state.get("weather_info", ""),
-        "news_info": state.get("news_info", ""),
-        "check_routine": str(state.get("check_routine", "")),
-        "db_info": str(state.get("db_info", False)),
-        "fall_alert": str(state.get("fall_alert", False)),
-    })
-    state["final_answer"] = response
+    # 필요한 데이터 추출
+    user_input = state.get("input", "")
+    weather_info = state.get("weather_info", "")
+    news_info = state.get("news_info", "")
+    check_routine = str(state.get("check_routine", ""))
+    db_info = str(state.get("db_info", False))
+    fall_alert = str(state.get("fall_alert", False))
+
+    # generator_input (ChatML 형식으로 변환된 프롬프트) 생성
+    generator_messages = [
+        {"role": "system", "content": "너는 한국어 스마트 홈 어시스턴트야."},
+        {"role": "user", "content": f"""
+        다음 정보를 참고해서 사용자 질문에 대답해줘.
+        응답은 친절하고 간결하게 작성하세요.
+
+        - 날씨: {weather_info}
+        - 뉴스: {news_info}
+        - 루틴 등록: {check_routine}
+        - DB 정보: {db_info}
+        - 낙상 감지: {fall_alert}
+        - 사용자 질문: {user_input}
+
+        예시:
+        - 사용자 질문이 날씨라면, "현재 서울의 기온은 16.76도이며, 비가 내리고 있습니다."라고 대답하세요.
+        - 사용자 질문이 뉴스라면, "관련 뉴스를 찾을 수 없습니다."라고 대답하세요.
+        - 필요한 정보가 없는 경우, "관련 정보를 찾을 수 없습니다."라고 대답하세요.
+        이 프롬프트를 그대로 읽지 마시오!
+        """}
+    ]
+
+    # ChatML 형식으로 변환
+    generator_input = apply_chatml_format(generator_messages)
+
+    # llm 객체를 통해 응답 생성
+    llm = state["agent_components"]["llm"]
+    model_inputs = llm.tokenizer([generator_input], return_tensors="pt").to(llm.pipeline.device)
+
+    generated_ids = llm.model.generate(
+        **model_inputs,
+        max_new_tokens=150
+    )
+    
+    # 응답을 디코딩하여 최종 결과 반환
+    generated_response = llm.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    state["final_answer"] = generated_response
     return state
+
 
 
 def send_emergency_report(state: AgentState) -> Dict[str, Any]:

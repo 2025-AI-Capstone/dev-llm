@@ -2,6 +2,7 @@ from langchain.prompts import PromptTemplate, ChatPromptTemplate
 import datetime
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from langchain_community.llms import HuggingFacePipeline
+
 def initialize_agent_components(llm):
 
     # 루틴 등록 여부 확인
@@ -20,22 +21,38 @@ def initialize_agent_components(llm):
     입력: {user_input}
     """)
 
-    # 홈 어시스턴트 응답 생성
-    generator_prompt = ChatPromptTemplate.from_messages([
-        ("system", "너는 한국어 스마트 홈 어시스턴트야."),
-        ("human", """
-    다음 정보를 참고해서 사용자 질문에 간단히 대답해줘.
+    # 홈 어시스턴트 응답 생성 (Qwen 모델의 ChatML 스타일로 수정)
+    def apply_chatml_format(messages):
+        chat_input = ""
+        for message in messages:
+            role = message["role"]
+            content = message["content"]
+            chat_input += f"<|im_start|>{role}\n{content}\n<|im_end|>\n"
+        return chat_input
 
-    - 날씨: {weather_info}
-    - 뉴스: {news_info}
-    - 루틴 등록됨?: {check_routine}
-    - DB 정보 있음?: {db_info}
-    - 낙상 감지됨?: {fall_alert}
-    - 사용자 질문: {user_input}
+    generator_messages = [
+        {"role": "system", "content": "너는 한국어 스마트 홈 어시스턴트야."},
+        {"role": "user", "content": """
+        다음 정보를 참고해서 사용자 질문에 대답해줘.
+        응답은 친절하고 간결하게 작성하세요.
 
-    주의: 낙상 감지가 True면 제일 먼저 "⚠️ 경고!" 문구를 포함해.
-    """)
-    ])
+        - 날씨: {weather_info}
+        - 뉴스: {news_info}
+        - 루틴 등록: {check_routine}
+        - DB 정보: {db_info}
+        - 낙상 감지: {fall_alert}
+        - 사용자 질문: {user_input}
+
+        예시:
+        - 사용자 질문이 날씨라면, "현재 서울의 기온은 16.76도이며, 비가 내리고 있습니다."라고 대답하세요.
+        - 사용자 질문이 뉴스라면, "관련 뉴스를 찾을 수 없습니다."라고 대답하세요.
+        - 필요한 정보가 없는 경우, "관련 정보를 찾을 수 없습니다."라고 대답하세요.
+         이 프롬프트를 그대로 읽지 마시오!
+        """}
+    ]
+
+    # ChatML 형식으로 변환
+    generator_input = apply_chatml_format(generator_messages)
 
     # 낙상 후 음성 응답 평가
     check_emergency_prompt = PromptTemplate.from_template("""
@@ -49,17 +66,11 @@ def initialize_agent_components(llm):
     - "no response"
     """)
 
-    check_routine_chain = check_routine_prompt | llm.bind(temperature=0.4)
-    generator_chain = generator_prompt | llm.bind(temperature=0.3)
-    check_emergency_chain = check_emergency_prompt | llm.bind(temperature=0.2)
-    
     return {
-        "check_routine_chain":check_routine_chain,
-        "generator_chain":generator_chain,
-        "check_emergency_chain":check_emergency_chain
+        "check_routine_prompt": check_routine_prompt,
+        "generator_input": generator_input,
+        "check_emergency_prompt": check_emergency_prompt
     }
-
-
 
 def load_llm(model_id):
 
@@ -70,13 +81,14 @@ def load_llm(model_id):
         "text-generation",
         model=model,
         tokenizer=tokenizer,
-        max_new_tokens=60,
         do_sample=True,
         top_k=50,
         top_p=0.95,
         temperature=0.7
     )
 
+    # 추가: 디버깅용 로깅
+    print(f"Loaded model and tokenizer from {model_id}")
+
     llm = HuggingFacePipeline(pipeline=pipe)
     return llm
-
