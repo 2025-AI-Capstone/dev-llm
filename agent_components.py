@@ -74,7 +74,8 @@ def load_llm(model_id):
         do_sample=True,
         top_k=50,
         top_p=0.95,
-        temperature=0.7
+        temperature=0.7,
+        return_full_text=False
     )
 
     llm = HuggingFacePipeline(pipeline=pipe)
