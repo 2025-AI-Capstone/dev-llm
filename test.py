@@ -11,7 +11,7 @@ agent_components = initialize_agent_components(llm)
 result = run_workflow(
     input="날씨",
     llm=llm,
-    fall_alert=False,
+    fall_alert=True,
     agent_components= agent_components
 )
 
