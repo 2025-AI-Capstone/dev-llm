@@ -21,7 +21,8 @@ def check_routine_edge(state: AgentState) -> Dict:
         raise ValueError("check_routine_chain not found in agent_components")
 
     response = check_routine_chain.invoke({"user_input": state["input"]})
-    state["check_routine"] = response.content
+    state["check_routine"] = response
+    print(response)
     return state
 
 def await_voice_response(state: AgentState) -> Dict:
