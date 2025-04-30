@@ -7,19 +7,17 @@ def initialize_agent_components(llm):
 
     # 루틴 등록 여부 확인
     check_routine_prompt = PromptTemplate.from_template("""
-    입력이 루틴 등록 요청이면 아래 형식의 JSON으로 추출하고,
-    그 외에는 "reject"만 출력하세요.
+시스템: 당신은 루틴 등록 요청을 감지하는 분석기입니다. 루틴 등록 요청이면 정확한 JSON 형식으로 변환하고, 아니면 "reject"만 출력하세요. 입력의 내용을 절대 포함하지 마세요.
 
-    예시 형식:
-    {{
-    "title": "약먹을시간",
-    "alarm_time": "09:00:00",
-    "repeat_type": "daily",
-    "user_id": 1
-    }}
+{
+  "title": "약먹기",
+  "alarm_time": "09:00:00",
+  "repeat_type": "daily",
+  "user_id": 1
+}
 
-    입력: {user_input}
-    """)
+입력: {user_input}
+""")
 
     # 홈 어시스턴트 응답 생성
     generator_prompt = ChatPromptTemplate.from_messages([
