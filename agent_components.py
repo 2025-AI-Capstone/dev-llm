@@ -2,6 +2,7 @@ from langchain.prompts import PromptTemplate, ChatPromptTemplate
 import datetime
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from langchain_community.llms import HuggingFacePipeline
+
 def initialize_agent_components(llm):
 
     # 루틴 등록 여부 확인
@@ -22,21 +23,27 @@ def initialize_agent_components(llm):
 
     # 홈 어시스턴트 응답 생성
     generator_prompt = ChatPromptTemplate.from_messages([
-        ("system", "너는 한국어 스마트 홈 어시스턴트야."),
-        ("human", """
-        너는 한국어 스마트 홈 어시스턴트야.
-        다음 정보 중 **값이 있는** 항목만 응답에 포함하고, **값이 없는** 항목은 언급하지 마세요.
-
-        - 날씨: {weather_info}
-        - 뉴스: {news_info}
-        - 루틴 등록됨?: {check_routine}
-        - DB 정보 있음?: {db_info}
-        - 낙상 감지됨?: {fall_alert}
-        - 사용자 질문: {user_input}
-
-        응답은 친절하고 간결하게 작성하세요.
+    ("system", """
+    당신은 한국어 스마트 홈 어시스턴트입니다. 다음 규칙을 엄격히 따르세요:
+    1. 제공된 정보 중 값이 있는 항목만 언급하세요
+    2. 값이 비어있거나 없는 항목은 절대 언급하지 마세요
+    3. 응답은 정보 전달에만 집중하고 불필요한 설명이나 추가 문구를 포함하지 마세요
+    4. 정보를 사실적으로만 전달하고 추가적인 제안이나 질문을 하지 마세요
+    """),
+    ("human", "{user_input}"),
+    ("system", """
+    현재 정보:
+    날씨: {weather_info}
+    뉴스: {news_info}
+    루틴: {check_routine}
+    DB: {db_info}
+    낙상알림: {fall_alert}
+    
+    위 정보 중 값이 있는 항목만 사용해 응답하세요. 
+    정보를 있는 그대로만 전달하고, 추가 질문이나 제안, 인사말, 마무리 문구를 붙이지 마세요.
+    응답은 필요한 정보만 포함하고 다른 내용은 제외하세요.
     """)
-    ])
+])
 
     # 낙상 후 음성 응답 평가
     check_emergency_prompt = PromptTemplate.from_template("""
