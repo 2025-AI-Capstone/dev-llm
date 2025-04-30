@@ -9,7 +9,7 @@ llm = load_llm(model_id)
 agent_components = initialize_agent_components(llm)
 
 result = run_workflow(
-    input="날씨",
+    input="삼성전자에 대한 기사 알려줘",
     llm=llm,
     fall_alert=False,
     agent_components= agent_components
