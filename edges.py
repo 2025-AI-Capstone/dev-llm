@@ -2,17 +2,14 @@ from AgentState import AgentState
 from typing import Dict
 
 def task_selector(state: AgentState) -> Dict:
-    user_input = state["input"].strip().lower()
+    chain = state["agent_components"]["task_selector_chain"]
+    response = chain.invoke({"user_input": state["input"]}).strip()
 
-    if any(keyword in user_input for keyword in ["weather", "날씨", "기상", "온도", "기온", "예보"]):
-        state["task_type"] = "call_weather"
-    elif any(keyword in user_input for keyword in ["news", "뉴스", "기사", "소식", "정보"]):
-        state["task_type"] = "call_news"
-    elif any(keyword in user_input for keyword in ['저장', "기억해", "일정 추가", "알람 설정", "알람", "일정", "기억"]):
-        state["task_type"] = "call_db"
-    else:
-        state["task_type"] = "normal"
+    # 유효한 값이 아닐 경우 fallback
+    if response not in ["call_weather", "call_news", "call_db", "normal"]:
+        response = "normal"
 
+    state["task_type"] = response
     return state
 
 def check_routine_edge(state: AgentState) -> Dict:

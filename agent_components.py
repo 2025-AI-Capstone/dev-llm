@@ -18,6 +18,19 @@ def initialize_agent_components(llm):
 
 입력: {user_input}
 """)
+    task_selector_prompt = PromptTemplate.from_template("""
+    다음 사용자의 요청을 보고, 다음 중 하나의 태스크 유형만 출력하세요.
+
+    가능한 태스크:
+    - call_weather: 날씨나 기온에 대한 요청
+    - call_news: 뉴스, 기사, 소식 요청
+    - call_db: 일정/알람 등록, 루틴 저장 요청
+    - normal: 단순 대화, 그 외 요청
+
+    절대 설명 없이 아래 중 하나만 출력하세요:
+
+    입력: "{user_input}"
+    """)
 
     # 홈 어시스턴트 응답 생성
     generator_prompt = ChatPromptTemplate.from_messages([
@@ -56,14 +69,17 @@ def initialize_agent_components(llm):
     - "no response"
     """)
 
-    check_routine_chain = check_routine_prompt | llm.bind(temperature=0.4)
+    check_routine_chain = check_routine_prompt | llm.bind(temperature=0.0)
     generator_chain = generator_prompt | llm.bind(temperature=0.3)
     check_emergency_chain = check_emergency_prompt | llm.bind(temperature=0.2)
+    task_selector_chain = task_selector_prompt | llm.bind(temperature=0.0)
+
     
     return {
         "check_routine_chain":check_routine_chain,
         "generator_chain":generator_chain,
-        "check_emergency_chain":check_emergency_chain
+        "check_emergency_chain":check_emergency_chain,
+        "task_selector_chain":task_selector_chain
     }
 
 
