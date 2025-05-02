@@ -1,11 +1,16 @@
 from workflow import run_workflow
-from agent_components import initialize_agent_components, load_llm
+from agent_components import initialize_agent_components
 from dotenv import load_dotenv
+import os
+from langchain.chat_models import ChatOpenAI
 
 load_dotenv()
 
-model_id = "Qwen/Qwen2.5-3B-Instruct"
-llm = load_llm(model_id)
+llm = ChatOpenAI(
+    temperature=0.7,
+    model_name="gpt-4",
+    openai_api_key=os.getenv("OPENAI_API_KEY")
+)
 agent_components = initialize_agent_components(llm)
 
 result = run_workflow(
