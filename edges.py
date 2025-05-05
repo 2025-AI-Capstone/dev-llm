@@ -3,8 +3,8 @@ from typing import Dict
 
 def task_selector(state: AgentState) -> Dict:
     chain = state["agent_components"]["task_selector_chain"]
-    response = chain.invoke({"user_input": state["input"]}).strip()
-
+    response = chain.invoke({"user_input": state["input"]})
+    task_type = response.content.strip()
     # 유효한 값이 아닐 경우 fallback
     if response not in ["call_weather", "call_news", "call_db", "normal"]:
         response = "normal"

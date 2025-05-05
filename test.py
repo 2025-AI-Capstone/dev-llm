@@ -8,7 +8,7 @@ load_dotenv()
 
 llm = ChatOpenAI(
     temperature=0.7,
-    model_name="gpt-4",
+    model_name="gpt-3.5-turbo",
     openai_api_key=os.getenv("OPENAI_API_KEY")
 )
 agent_components = initialize_agent_components(llm)
