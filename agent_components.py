@@ -18,18 +18,22 @@ def initialize_agent_components(llm):
 
 입력: {user_input}
 """)
+
     task_selector_prompt = PromptTemplate.from_template("""
-    다음 사용자의 요청을 보고, 다음 중 하나의 태스크 유형만 출력하세요.
+    당신은 사용자의 요청을 분류하는 역할입니다. 요청을 읽고 다음 중 하나의 작업 유형만 정확하게 출력하십시오. 
+    다른 설명, 문장, 마침표 등은 포함하지 마십시오.
 
-    가능한 태스크:
-    - call_weather: 날씨나 기온에 대한 요청
-    - call_news: 뉴스, 기사, 소식 요청
-    - call_db: 일정/알람 등록, 루틴 저장 요청
-    - normal: 단순 대화, 그 외 요청
+    작업 유형:
+    - call_weather
+    - call_news
+    - call_db
+    - normal
 
-    절대 설명 없이 아래 중 하나만 출력하세요:
+    출력 예시:
+    call_weather
+    오답: call_weather입니다 / call_weather. / 이 요청은 call_weather입니다
 
-    입력: "{user_input}"
+    입력: {user_input}
     """)
 
     # 홈 어시스턴트 응답 생성

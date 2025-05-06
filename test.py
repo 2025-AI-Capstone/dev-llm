@@ -14,7 +14,7 @@ llm = ChatOpenAI(
 agent_components = initialize_agent_components(llm)
 
 result = run_workflow(
-    input="오후 2시에 운동 일정 추가해줘",
+    input="오늘 주요 뉴스 알려줘",
     llm=llm,
     fall_alert=False,
     agent_components= agent_components

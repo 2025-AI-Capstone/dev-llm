@@ -4,13 +4,15 @@ from typing import Dict
 def task_selector(state: AgentState) -> Dict:
     chain = state["agent_components"]["task_selector_chain"]
     response = chain.invoke({"user_input": state["input"]})
-    task_type = response.content.strip()
-    # 유효한 값이 아닐 경우 fallback
-    if response not in ["call_weather", "call_news", "call_db", "normal"]:
-        response = "normal"
+    print(response.content)
+    task_type = response.content.strip()  
+    if task_type not in ["call_weather", "call_news", "call_db", "normal"]:
+        task_type = "normal"             
 
-    state["task_type"] = response
+    print("task_type:", task_type)
+    state["task_type"] = task_type
     return state
+
 
 def check_routine_edge(state: AgentState) -> Dict:
     check_routine_chain = state["agent_components"].get("check_routine_chain")
