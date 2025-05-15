@@ -88,6 +88,5 @@ def run_workflow(input: str, llm: Any, fall_alert: bool = False, agent_component
         "voice_input": "",
         "voice_response": ""
     }
-
     result = app.invoke(initial_state)
     return result["final_answer"]
